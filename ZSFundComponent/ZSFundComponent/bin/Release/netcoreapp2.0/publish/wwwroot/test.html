@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title id="webstiteTitle">组件测试</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" type="text/css" href="css/elementui-2.3.8.css" />
+    <script src="js/libs/jquery-3.2.1.min.js"></script>
+    <script src="js/libs/vue.min.js"></script>
+    <script src="js/libs/elementui-2.3.8.js"></script>
+    <script src="js/components/zsfund-componet.js"></script>
+</head>
+
+<body>
+    <div id="components-demo">
+        <zsfund-stock-select v-model="secCode" @change="change" size="mini"></zsfund-stock-select>   
+        <input type="button" v-on:click="showCode" value="show secCode" />
+    </div>
+</body>
+
+</html>
+<script>
+    var vm = new Vue({
+        el: '#components-demo',
+        data: {
+            secCode: null,
+        },
+        methods: {
+            change: function (value) {
+                console.log(value);
+            },
+            showCode: function () {
+                console.log(this.secCode);
+            }
+        }
+    });
+</script>

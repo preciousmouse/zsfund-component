@@ -1,0 +1,11 @@
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.0\ZSFundComponent.deps.json
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.0\ZSFundComponent.runtimeconfig.json
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.0\ZSFundComponent.runtimeconfig.dev.json
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.0\ZSFundComponent.dll
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.0\ZSFundComponent.pdb
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.0\ZSFundComponent.csproj.CoreCompileInputs.cache
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.0\ZSFundComponent.AssemblyInfoInputs.cache
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.0\ZSFundComponent.AssemblyInfo.cs
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.0\ZSFundComponent.dll
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.0\ZSFundComponent.pdb
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.0\ZSFundComponent.csprojAssemblyReference.cache

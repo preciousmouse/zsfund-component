@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" type="text/css" href="css/elementui-2.3.8.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/font-awesome.min.css">
+    <script src="js/libs/jquery-3.2.1.min.js"></script>
+    <script src="js/libs/bootstrap.min.js"></script>
+    <script src="js/libs/vue.min.js"></script>
+    <script src="js/libs/elementui-2.3.8.js"></script>
+    <script src="js/components/zsfund-componet.js"></script>
+</head>
+<body>
+    <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+        开始演示模态框
+    </button>
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        模态框（Modal）标题
+                    </h4>
+                </div>
+                <div class="modal-body" id="el-dialog">
+                    <el-dialog width="30%" title="内层 Dialog" :visible.sync="innerVisible"
+                               :modal-append-to-body="false" append-to-body>
+                        内层呢
+                    </el-dialog>
+                    <el-button type="primary" @click="innerVisible = true">打开内层 Dialog</el-button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        关闭
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        提交更改
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</body>
+<script>
+    var vm = new Vue({
+        el: "#el-dialog",
+        data: {
+            innerVisible: false
+        }
+    })
+</script>
+</html>

@@ -1,0 +1,28 @@
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.1\ZSFundComponent.deps.json
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.1\ZSFundComponent.runtimeconfig.json
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.1\ZSFundComponent.runtimeconfig.dev.json
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.1\ZSFundComponent.dll
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.1\ZSFundComponent.pdb
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.csprojAssemblyReference.cache
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.csproj.CoreCompileInputs.cache
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.RazorAssemblyInfo.cache
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.RazorAssemblyInfo.cs
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.AssemblyInfoInputs.cache
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.AssemblyInfo.cs
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.RazorTargetAssemblyInfo.cache
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.dll
+C:\Users\wuwenzhi\Documents\Visual Studio 2017\Projects\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.pdb
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.1\ZSFundComponent.deps.json
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.1\ZSFundComponent.runtimeconfig.json
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.1\ZSFundComponent.runtimeconfig.dev.json
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.1\ZSFundComponent.dll
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\bin\Debug\netcoreapp2.1\ZSFundComponent.pdb
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.csprojAssemblyReference.cache
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.csproj.CoreCompileInputs.cache
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.RazorAssemblyInfo.cache
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.RazorAssemblyInfo.cs
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.AssemblyInfoInputs.cache
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.AssemblyInfo.cs
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.RazorTargetAssemblyInfo.cache
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.dll
+C:\Users\guxiaojun\Desktop\ZSFundComponent\ZSFundComponent\obj\Debug\netcoreapp2.1\ZSFundComponent.pdb
