@@ -12225,11 +12225,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\guxiaojun\\Documents\\GitHub\\zsfund-component\\ZSFundComponent\\ZSFundComponent\\ZSFundComponent.csproj",
+      "projectUniqueName": "C:\\Users\\guxiaojun\\Desktop\\ZSFundComponent\\ZSFundComponent\\ZSFundComponent.csproj",
       "projectName": "ZSFundComponent",
-      "projectPath": "C:\\Users\\guxiaojun\\Documents\\GitHub\\zsfund-component\\ZSFundComponent\\ZSFundComponent\\ZSFundComponent.csproj",
+      "projectPath": "C:\\Users\\guxiaojun\\Desktop\\ZSFundComponent\\ZSFundComponent\\ZSFundComponent.csproj",
       "packagesPath": "C:\\Users\\guxiaojun\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\guxiaojun\\Documents\\GitHub\\zsfund-component\\ZSFundComponent\\ZSFundComponent\\obj\\",
+      "outputPath": "C:\\Users\\guxiaojun\\Desktop\\ZSFundComponent\\ZSFundComponent\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

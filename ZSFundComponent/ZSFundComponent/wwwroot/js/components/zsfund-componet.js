@@ -112,11 +112,11 @@ Vue.component('zsfund-origination-tree', {
                 isLeaf: 'leaf',
                 type: 'type',
                 disabled: 'disable'
-            }
+            },
         };
     },
-    props: ['options', 'prevNodes'],
-    template: "\n        <div>\n            <el-select v-model=\"selectNodes\" :multiple=\"options.multiple\" filterable remote placeholder=\"\u8F93\u5165\u5173\u952E\u5B57\" :style=\"{width:options.width+'px'}\"\n                :collapse-tags=\"options.collapseTags\" value-key=\"id\" :remote-method=\"getSearchResult\" :loading=\"loading\">\n                <el-option-group v-if=\"selectNodes!=undefined && selectNodes.length>0\" label=\"\u5DF2\u9009\u4E2D\">\n                    <el-option v-for=\"item in selectNodes\" :label=\"item.label\" :key=\"item.id\" :value=\"item\"></el-option>\n                </el-option-group>\n                <el-option-group label=\"\u641C\u7D22\u7ED3\u679C\">\n                    <el-option v-for=\"item in search\" :label=\"item.label\" :key=\"item.id\" :value=\"item\"></el-option>\n                </el-option-group>\n            </el-select>\n            <el-tree :props=\"props\" lazy :load=\"onload\" node-key=\"id\"  @node-click=\"onclick\"\n                    style=\"height:50vh;overflow-y:auto;margin-top:15px;\">\n                <span class=\"custom-tree-node\" slot-scope=\"{ node, data }\">\n                    <i v-if=\"data.type=='department'\" class=\"fa fa-university\"></i>\n                    <i v-else-if=\"data.type=='group'\" class=\"fa fa-users\"></i>\n                    <i v-else-if=\"data.type=='manager'\" class=\"fa fa-user-secret\"></i>\n                    <i v-else=\"data.type=='employee'\" class=\"fa fa-user\"></i>\n                    <span>{{ node.label }}</span>\n                </span>\n            </el-tree>\n        </div>\n    ",
+    props: ['options', 'prevnodes'],
+    template: "\n        <div>\n            <el-select v-model=\"selectNodes\" :multiple=\"options.multiple\" filterable remote placeholder=\"\u8F93\u5165\u5173\u952E\u5B57\"\n                :collapse-tags=\"options.collapseTags\" value-key=\"id\" :remote-method=\"getSearchResult\" :loading=\"loading\">\n                <el-option-group v-if=\"selectNodes!=undefined && selectNodes.length>0\" label=\"\u5DF2\u9009\u4E2D\">\n                    <el-option v-for=\"item in selectNodes\" :label=\"item.label\" :key=\"item.id\" :value=\"item\"></el-option>\n                </el-option-group>\n                <el-option-group  label=\"\u641C\u7D22\u7ED3\u679C\">\n                    <el-option v-for=\"item in search\" :label=\"item.label\" :key=\"item.id\" :value=\"item\"></el-option>\n                </el-option-group>\n            </el-select>\n            <el-tree :props=\"props\" lazy :load=\"onload\" node-key=\"id\"  @node-click=\"onclick\">\n                <span class=\"custom-tree-node\" slot-scope=\"{ node, data }\">\n                    <i v-if=\"data.type=='department'\" class=\"fa fa-university\"></i>\n                    <i v-else-if=\"data.type=='group'\" class=\"fa fa-users\"></i>\n                    <i v-else-if=\"data.type=='manager'\" class=\"fa fa-user-secret\"></i>\n                    <i v-else=\"data.type=='employee'\" class=\"fa fa-user\"></i>\n                    <span>{{ node.label }}</span>\n                </span>\n            </el-tree>\n        </div>\n    ",
     methods: {
         onload: function (node, resolve) {
             var _this = this;
@@ -177,6 +177,28 @@ Vue.component('zsfund-origination-tree', {
                 _this.loading = false;
             });
         },
+        loadLastNodes: function () {
+            if (!this.prevnodes) {
+                return;
+            }
+            var data = this.prevnodes;
+            this.appendToOptions(data);
+            if (this.options.multiple) {
+                if (this.selectNodes.findIndex(function (ele) { return ele.id == data.id; }) == -1) {
+                    //深拷贝 用作watch
+                    var cpy = [];
+                    for (var i in data) {
+                        cpy.push(this.options.setArrayFromData(data[i]));
+                    }
+                    this.selectNodes = cpy;
+                }
+            }
+            else {
+                if (this.selectNodes == "" || this.selectNodes.id != data[0].id) {
+                    this.selectNodes = this.options.setArrayFromData(data[0]);
+                }
+            }
+        }
     },
     watch: {
         selectNodes: function (newVal, oldVal) {
@@ -212,6 +234,11 @@ Vue.component('zsfund-origination-tree', {
             function (query) {
                 return "keyword=" + query;
             };
+        //this.selectNodes = this.options.setArrayFromData(this.prevnodes);
+        //this.loadLastNodes();
+    },
+    mounted: function () {
+        this.loadLastNodes();
     }
 });
 Vue.component("zsfund-origination-input-select", {
@@ -220,7 +247,8 @@ Vue.component("zsfund-origination-input-select", {
             dialogVisible: false,
             tags: [],
             selectData: [],
-            prevNodes: [],
+            prevNodes: null,
+            firstload: true,
             option: {
                 collapseTags: false,
                 multiple: false,
@@ -231,7 +259,7 @@ Vue.component("zsfund-origination-input-select", {
         };
     },
     props: ['options'],
-    template: "\n        <div>\n            <div v-if=\"options.disabled\">\n                <el-input :disabled=\"true\" placeholder=\"\u8BF7\u8F93\u5165\u5185\u5BB9\"></el-input></div>\n            <div v-else>\n                <div class=\"select\" @click=\"dialogVisible = true\" style=\"position:relative;\">\n                    <el-input v-show=\"tags.length!=0\"></el-input>\n                    <el-input v-show=\"tags.length==0\" placeholder=\"\u8BF7\u8F93\u5165\u5185\u5BB9\"></el-input>\n                    <span v-if=\"options.multiple\" class=\"tags\" style=\"position:absolute;top: 20%;\">\n                        <el-tag  v-for=\"tag in tags\" :key=\"tag\" size=\"small\" style=\"margin-left: 6px;\"\n                                closable @close=\"closeTag(tag)\" :disable-transitions=\"true\">\n                            {{tag.label}}\n                        </el-tag>\n                    </span>\n                    <span v-else style=\"position:absolute;top: 20%;\">\n                        <el-tag v-show=\"tags.id!=undefined\" size=\"small\" style=\"margin-left: 6px;\"\n                            closable @close=\"closeTag(tags)\" :disable-transitions=\"true\">\n                            {{tags.label}}\n                        </el-tag>\n                    </span>\n                </div>\n                <el-dialog :visible.sync=\"dialogVisible\" :width=\"300\" custom-class=\"componydialog\" center\n                        :modal-append-to-body=\"false\" append-to-body :close-on-click-modal=\"false\">\n                    <zsfund-origination-tree :prevNodes=\"prevNodes\" :options=\"option\" v-on:getvalue=\"setValue\"></zsfund-origination-tree>\n                    <span slot=\"footer\" class=\"dialog-footer\">\n                        <el-button @click=\"dialogVisible = false\">\u53D6 \u6D88</el-button>\n                        <el-button type=\"primary\" @click=\"handleConfirm\">\u786E \u5B9A</el-button>\n                    </span>\n                </el-dialog>\n            </div>\n        </div>\n    ",
+    template: "\n        <div>\n            <div v-if=\"options.disabled\">\n                <el-input :disabled=\"true\" placeholder=\"\u8BF7\u8F93\u5165\u5185\u5BB9\"></el-input></div>\n            <div v-else>\n                <div class=\"select\" @click=\"dialogVisible = true\" style=\"position:relative;\">\n                    <span class=\"tags\" style=\"position:absolute;top: 20%;\">\n                        <el-tag v-for=\"tag in tags\" :key=\"tag\" size=\"small\" style=\"margin-left: 6px;\"\n                                closable @close=\"closeTag(tag)\" :disable-transitions=\"true\">\n                            <i v-if=\"tag.type=='department'\" class=\"fa fa-university\"></i>\n                            <i v-else-if=\"tag.type=='group'\" class=\"fa fa-users\"></i>\n                            <i v-else-if=\"tag.type=='manager'\" class=\"fa fa-user-secret\"></i>\n                            <i v-else=\"tag.type=='employee'\" class=\"fa fa-user\"></i>\n                            {{tag.label}}\n                        </el-tag>\n                    </span>\n                    <el-input v-show=\"tags.length!=0\"></el-input>\n                    <el-input v-show=\"tags.length==0\" placeholder=\"\u8BF7\u8F93\u5165\u5185\u5BB9\"></el-input>\n                </div>\n                <el-dialog :visible.sync=\"dialogVisible\" :width=\"300\" custom-class=\"componydialog\" \n                        :modal-append-to-body=\"false\" append-to-body :close-on-click-modal=\"false\">\n                    <zsfund-origination-tree :prevnodes=\"prevNodes\" :options=\"option\" v-on:getvalue=\"setValue\"></zsfund-origination-tree>\n                    <span slot=\"footer\" class=\"dialog-footer\">\n                        <el-button @click=\"dialogVisible = false\">\u53D6 \u6D88</el-button>\n                        <el-button type=\"primary\" @click=\"handleConfirm\">\u786E \u5B9A</el-button>\n                    </span>\n                </el-dialog>\n            </div>\n        </div>\n    ",
     methods: {
         setValue: function (data) {
             this.selectData = data;
@@ -244,6 +272,10 @@ Vue.component("zsfund-origination-input-select", {
             //进而selectData带动data改变
             //三者使用同一块内存？
             this.tags = this.selectData;
+            if (!this.options.multiple && this.prevNodes && this.firstload) {
+                this.firstload = false;
+                return;
+            }
             this.dialogVisible = false;
         },
         closeTag: function (tag) {
@@ -272,6 +304,9 @@ Vue.component("zsfund-origination-input-select", {
             ajaxHelper.RequestData(url, para, function (idList) {
                 var url = "http://userservice/api/User/List";
                 var para = "idList=" + idList;
+                if (idList == "") {
+                    return;
+                }
                 //通过id得到部门节点信息的api未做
                 //部门选择模式和混合选择模式逻辑未做
                 ajaxHelper.RequestData(url, para, function (data) {
@@ -281,22 +316,26 @@ Vue.component("zsfund-origination-input-select", {
                         cpy.push(_this.setArrayFromData(data[i]));
                     }
                     _this.tags = cpy;
-                    //} else {
-                    //    
-                    //}
-                    _this.prevNodes = cpy;
                 });
             });
         }
     },
     watch: {
         tags: function (newVal, oldVal) {
-            var res = newVal;
-            if (Array.isArray(newVal)) {
-                //newVal = new Array(newVal);
-                res = newVal.slice(0);
+            if (!Array.isArray(newVal)) {
+                this.tags = new Array(newVal);
             }
-            this.$emit('change', res);
+            else {
+                var res = newVal;
+                //此处对prevNodes进行更新是为了
+                //若在加载内部组件zsfund-origination-tree前就对最外层tags进行close操作的话
+                //内部组件得到的prevNodes可以得到更新后的数据
+                this.prevNodes = [];
+                for (var i in res) {
+                    this.prevNodes.push(res[i].data);
+                }
+                this.$emit('change', res);
+            }
         }
     },
     mounted: function () {
