@@ -136,12 +136,12 @@ Vue.component('zsfund-origination-tree', {
             </el-select>
             <el-tree :props="props" lazy :load="onload" node-key="id"  @node-click="onclick" 
                     show-checkbox check-on-click-node check-strictly :expand-on-click-node="false">
-                <span class="custom-tree-node" slot-scope="{ node, data }">
-                    <i v-if="data.type=='department'" class="fa fa-university"></i>
-                    <i v-else-if="data.type=='group'" class="fa fa-users"></i>
-                    <i v-else-if="data.type=='manager'" class="fa fa-user-secret"></i>
-                    <i v-else="data.type=='employee'" class="fa fa-user"></i>
-                    <span>{{ node.label }}</span>
+                <span class="custom-tree-node" slot-scope="ele">
+                    <i v-if="ele.data.type=='department'" class="fa fa-university"></i>
+                    <i v-else-if="ele.data.type=='group'" class="fa fa-users"></i>
+                    <i v-else-if="ele.data.type=='manager'" class="fa fa-user-secret"></i>
+                    <i v-else="ele.data.type=='employee'" class="fa fa-user"></i>
+                    <span>{{ ele.node.label }}</span>
                 </span>
             </el-tree>
             <div class="footer" style=""><span class="buttons">
