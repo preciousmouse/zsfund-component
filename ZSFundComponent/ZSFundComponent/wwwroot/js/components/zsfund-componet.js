@@ -138,6 +138,17 @@ Vue.component('zsfund-origination-tree', {
                 _this.appendToOptions(data);
             });
         },
+        findIndex: function (array, callback) {
+            if (!Array.isArray(array)) {
+                return -1;
+            }
+            for (var i in array) {
+                if (callback(array[i])) {
+                    return i;
+                }
+            }
+            return -1;
+        },
         onclick: function (node, data, f) {
             if (node.leaf == false) {
                 //if (data.isLeaf == false) { // data.isLeaf根据树节点的resolve进行自动更新
@@ -145,11 +156,10 @@ Vue.component('zsfund-origination-tree', {
                 return;
             }
             if (this.options.multiple) {
+                var index = this.findIndex(this.selectNodes, function (ele) { return ele.id == node.id; });
                 //var index = this.selectNodes.findIndex(ele => { return ele.id == node.id });
-                //IE 不支持find和findIndex,使用filter代替
-                var index = this.selectNodes.filter(function (ele) { return ele.id == data.id; }).length;
-                //if (index == -1) {
-                if (index <= 0) {
+                //IE 不支持find和findIndex,使用自定义的简易findIndex
+                if (index == -1) {
                     //深拷贝 用作watch
                     var cpy = this.selectNodes.slice(0);
                     cpy.push(this.options.setArrayFromData(node.data));
@@ -277,7 +287,7 @@ Vue.component("zsfund-origination-input-select", {
             },
         };
     },
-    props: ['options'],
+    props: ['options', 'value'],
     template: "\n        <div>\n            <div v-if=\"options.disabled\">\n                <el-input :disabled=\"true\" placeholder=\"\u8BF7\u8F93\u5165\u5185\u5BB9\"></el-input></div>\n            <div v-else>\n                <div class=\"select\" @click=\"dialogVisible = true\" style=\"position:relative;\">\n                    <span class=\"tags\" style=\"position:absolute;top: 20%;\">\n                        <el-tag v-for=\"tag in tags\" :key=\"tag\" size=\"small\" style=\"margin-left: 6px;\"\n                                closable @close=\"closeTag(tag)\" :disable-transitions=\"true\">\n                            <i v-if=\"tag.type=='department'\" class=\"fa fa-university\"></i>\n                            <i v-else-if=\"tag.type=='group'\" class=\"fa fa-users\"></i>\n                            <i v-else-if=\"tag.type=='manager'\" class=\"fa fa-user-secret\"></i>\n                            <i v-else=\"tag.type=='employee'\" class=\"fa fa-user\"></i>\n                            {{tag.label}}\n                        </el-tag>\n                    </span>\n                    <el-input v-show=\"tags.length!=0\"></el-input>\n                    <el-input v-show=\"tags.length==0\" placeholder=\"\u8BF7\u8F93\u5165\u5185\u5BB9\"></el-input>\n                </div>\n                <el-dialog :visible.sync=\"dialogVisible\" :width=\"300\" custom-class=\"componydialog\" \n                        :modal-append-to-body=\"false\" append-to-body :close-on-click-modal=\"false\">\n                    <zsfund-origination-tree :prevnodes=\"prevNodes\" :options=\"option\" \n                        v-on:getvalue=\"setValue\" v-on:cancelbutton=\"dialogVisible=false;\"\n                        v-on:confirmbutton=\"handleConfirm\"></zsfund-origination-tree>\n                </el-dialog>\n            </div>\n        </div>\n    ",
     methods: {
         setValue: function (data) {
@@ -320,23 +330,20 @@ Vue.component("zsfund-origination-input-select", {
         },
         loadLastNodes: function () {
             var _this = this;
-            var url = "/api/User/LastNodes", para = "";
-            ajaxHelper.RequestData(url, para, function (idList) {
-                var url = "http://userservice/api/User/List";
-                var para = "idList=" + idList;
-                if (idList == "") {
-                    return;
+            var idList = this.value;
+            if (idList == "") {
+                return;
+            }
+            var url = "http://userservice/api/User/List";
+            var para = "idList=" + idList;
+            //部门选择模式和混合选择模式逻辑未做
+            ajaxHelper.RequestData(url, para, function (data) {
+                //if (this.options.multiple) {
+                var cpy = [];
+                for (var i in data) {
+                    cpy.push(_this.setArrayFromData(data[i]));
                 }
-                //通过id得到部门节点信息的api未做
-                //部门选择模式和混合选择模式逻辑未做
-                ajaxHelper.RequestData(url, para, function (data) {
-                    //if (this.options.multiple) {
-                    var cpy = [];
-                    for (var i in data) {
-                        cpy.push(_this.setArrayFromData(data[i]));
-                    }
-                    _this.tags = cpy;
-                });
+                _this.tags = cpy;
             });
         }
     },
@@ -354,8 +361,12 @@ Vue.component("zsfund-origination-input-select", {
                 for (var i in res) {
                     this.prevNodes.push(res[i].data);
                 }
-                this.$emit('change', res);
+                this.$emit('input', res);
             }
+        },
+        value: function (newVal, oldVal) {
+            this.prevNodes = newVal ? newVal : null;
+            this.loadLastNodes();
         }
     },
     mounted: function () {
@@ -364,6 +375,7 @@ Vue.component("zsfund-origination-input-select", {
         this.option.type = this.options.type ? this.options.type : 0;
         this.option.width = "260";
         this.option.height = "300";
+        this.prevNodes = this.value ? this.value : null;
         this.loadLastNodes();
     }
 });

@@ -21,7 +21,8 @@
     <div id="components-demo">
         <zsfund-stock-select v-model="secCode" @change="change" size="mini"></zsfund-stock-select>
         <input type="button" v-on:click="showCode" value="show secCode" />
-        <zsfund-origination-input-select :options="OrgOptions" v-model="nodes" @change="changeOrg"></zsfund-origination-input-select>
+        <zsfund-origination-input-select :options="OrgOptions" :value="str" @change="changeOrg"></zsfund-origination-input-select>
+        <el-button @click="showNodes">console log: nodes</el-button>
     </div>
 </body>
 
@@ -30,7 +31,12 @@
     var vm = new Vue({
         el: '#components-demo',
         data: {
+            str: "C29973E1-4F1B-4CE4-A413-4FF76A3DC32F",
+            //加载组件前str希望是一个字符串，表示一串id列表，以分号;分割
             nodes: [],
+            //nodes用于接收通过组件选择得到的值 
+            //返回值是一个数组，用于存放选择员工（部门）的信息
+            //即使在单选模式下，返回值也是一个长度为0或1的数组
             secCode: null,
             OrgOptions: {//zsfund-origination-input-select配置参数，说明如下：
                 collapseTags: false,//[option,默认为false]element-ui  el-select组件自带的属性,选中多组数据时，若该值为true，则只会显示第一条tag，多余的以“+1”形式表示
@@ -46,9 +52,13 @@
             showCode: function () {
                 console.log(this.secCode);
             },
-            changeOrg: function (val) { //返回参数val是一个数组
-                                        //即使在单选模式下，val也是一个长度为0或1的数组
-                console.log(val);
+            changeOrg: function (val) { 
+                this.nodes = val;
+            },
+            showNodes: function () {
+                console.log(this.str);
+                this.str = "8d4f0e19-8355-43c6-b49d-20c7c44774c3";
+                console.log(this.str);
             }
         }
     });

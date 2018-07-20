@@ -171,6 +171,17 @@ Vue.component('zsfund-origination-tree', {
                 this.appendToOptions(data);
             })
         },
+        findIndex(array, callback) {
+            if (!Array.isArray(array)) {
+                return -1;
+            }
+            for (var i in array) {
+                if (callback(array[i])) {
+                    return i;
+                }
+            }
+            return -1;
+        },
         onclick(node, data, f) {
             if (node.leaf == false) {
             //if (data.isLeaf == false) { // data.isLeaf根据树节点的resolve进行自动更新
@@ -178,11 +189,11 @@ Vue.component('zsfund-origination-tree', {
                 return;
             }
             if (this.options.multiple) {
+
+                var index = this.findIndex(this.selectNodes,ele => { return ele.id == node.id });
                 //var index = this.selectNodes.findIndex(ele => { return ele.id == node.id });
-                //IE 不支持find和findIndex,使用filter代替
-                var index= this.selectNodes.filter(ele => { return ele.id == data.id }).length;
-                //if (index == -1) {
-                if (index <= 0) {
+                //IE 不支持find和findIndex,使用自定义的简易findIndex
+                if (index == -1) {
                     //深拷贝 用作watch
                     var cpy = this.selectNodes.slice(0);
                     cpy.push(this.options.setArrayFromData(node.data))
@@ -310,7 +321,7 @@ Vue.component("zsfund-origination-input-select", {
             
         }
     },
-    props: ['options'],//collapseTags//disabled//multiple
+    props: ['options','value'],//collapseTags//disabled//multiple
     template: `
         <div>
             <div v-if="options.disabled">
@@ -379,23 +390,21 @@ Vue.component("zsfund-origination-input-select", {
             }
         },
         loadLastNodes() {
-            var url = "/api/User/LastNodes",para="";
-            ajaxHelper.RequestData(url, para, (idList) => {
-                var url = "http://userservice/api/User/List";
-                var para = "idList=" + idList;
-                if (idList == "") {
-                    return;
+            var idList = this.value;
+            if (idList == "") {
+                return;
+            }
+
+            var url = "http://userservice/api/User/List";
+            var para = "idList=" + idList;
+            //部门选择模式和混合选择模式逻辑未做
+            ajaxHelper.RequestData(url, para, (data) => {
+                //if (this.options.multiple) {
+                var cpy = [];
+                for (var i in data) {
+                    cpy.push(this.setArrayFromData(data[i]))
                 }
-                //通过id得到部门节点信息的api未做
-                //部门选择模式和混合选择模式逻辑未做
-                ajaxHelper.RequestData(url, para, (data) => {
-                    //if (this.options.multiple) {
-                    var cpy = [];
-                    for (var i in data) {
-                        cpy.push(this.setArrayFromData(data[i]))
-                    }
-                    this.tags = cpy;
-                })
+                this.tags = cpy;
             })
         }
     },
@@ -414,8 +423,12 @@ Vue.component("zsfund-origination-input-select", {
                     this.prevNodes.push(res[i].data);
                 }
 
-                this.$emit('change', res);
+                this.$emit('input', res);
             }
+        },
+        value(newVal, oldVal) {
+            this.prevNodes = newVal ? newVal : null;
+            this.loadLastNodes();
         }
     },
     mounted: function(){
@@ -424,7 +437,8 @@ Vue.component("zsfund-origination-input-select", {
         this.option.type = this.options.type ? this.options.type:0;
         this.option.width= "260";
         this.option.height = "300";
-        
+
+        this.prevNodes = this.value ? this.value : null;
         this.loadLastNodes();
     }
 });
