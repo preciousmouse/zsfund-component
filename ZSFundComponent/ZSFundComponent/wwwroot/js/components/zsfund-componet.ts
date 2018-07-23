@@ -135,7 +135,7 @@ Vue.component('zsfund-origination-tree', {
                 </el-option-group>
             </el-select>
             <el-tree :props="props" lazy :load="onload" node-key="id"  @node-click="onclick" 
-                    show-checkbox check-on-click-node check-strictly :expand-on-click-node="false">
+                    >
                 <span class="custom-tree-node" slot-scope="ele">
                     <i v-if="ele.data.type=='department'" class="fa fa-university"></i>
                     <i v-else-if="ele.data.type=='group'" class="fa fa-users"></i>
@@ -423,7 +423,7 @@ Vue.component("zsfund-origination-input-select", {
                     this.prevNodes.push(res[i].data);
                 }
 
-                this.$emit('input', res);
+                this.$emit('change', res);
             }
         },
         value(newVal, oldVal) {
