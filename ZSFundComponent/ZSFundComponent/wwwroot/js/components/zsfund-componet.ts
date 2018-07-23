@@ -111,13 +111,14 @@ Vue.component('zsfund-origination-tree', {
             //会触发selectNodes的watch
             search: [],
             loading: false,
+            fuckFlag: true,
             props: {
                 label: 'label',
                 children: 'nodes',
                 depth: 'depth',
                 isLeaf: 'leaf',
                 type: 'type',
-                disabled: 'disable'
+                disabled: 'disabled'
             },
 
         }
@@ -126,7 +127,8 @@ Vue.component('zsfund-origination-tree', {
     template: `
         <div id="orgTreeSelect">
             <el-select v-model="selectNodes" :multiple="options.multiple" filterable remote placeholder="输入关键字"
-                :collapse-tags="options.collapseTags" value-key="id" :remote-method="getSearchResult" :loading="loading">
+                    :collapse-tags="options.collapseTags" value-key="id" :remote-method="getSearchResult" 
+                    :loading="loading" @remove-tag="removeTag" @change="selectChosen">
                 <el-option-group v-if="selectNodes!=undefined && selectNodes.length>0" label="已选中">
                     <el-option v-for="item in selectNodes" :label="item.label" :key="item.id" :value="item"></el-option>
                 </el-option-group>
@@ -135,7 +137,7 @@ Vue.component('zsfund-origination-tree', {
                 </el-option-group>
             </el-select>
             <el-tree :props="props" lazy :load="onload" node-key="id"  @node-click="onclick" 
-                    >
+                     ref="tree" show-checkbox check-strictly @check-change="checkChange">
                 <span class="custom-tree-node" slot-scope="ele">
                     <i v-if="ele.data.type=='department'" class="fa fa-university"></i>
                     <i v-else-if="ele.data.type=='group'" class="fa fa-users"></i>
@@ -151,11 +153,72 @@ Vue.component('zsfund-origination-tree', {
         </div>
     `,
     methods: {
+        selectChosen(data) {
+            var dataid = [];
+            for (var i in data) {
+                dataid.push(data[i].id);
+            }
+            var checkKeys = this.$refs.tree.getCheckedKeys();
+            if (checkKeys.length > data.length) {
+                var delNodes = checkKeys.filter(function (e) { return dataid.indexOf(e) < 0; });
+                for (var i in delNodes) {
+                    this.$refs.tree.setChecked(delNodes[i], false);
+                }
+            } else if (checkKeys.length < data.length) {
+                var addNodes = data.filter(function (e) { return checkKeys.indexOf(e.id) < 0; });
+                for (var i in addNodes) {
+                    this.$refs.tree.setChecked(addNodes[i], true);
+                }
+            } else {
+                console.log("wtf");
+            }
+        },
+        removeTag(data) {
+            this.$refs.tree.setChecked(data.id,false);
+        },
+        checkChange(data, check) {
+            var node = this.$refs.tree.getNode(data);
+            if (this.options.multiple) {
+                //var index = this.findIndex(this.selectNodes, ele => { return ele.id == data.id });
+                //var index = this.selectNodes.findIndex(ele => { return ele.id == data.id });
+                //IE 不支持find和findIndex,使用自定义的简易findIndex
+                //if (index == -1) {
+                if (node.checked) {
+                    //深拷贝 用作watch
+                    var index = this.findIndex(this.selectNodes, ele => { return ele.id == data.id });
+                    if (index < 0) {//避免重复添加
+                        var cpy = this.selectNodes.slice(0);
+                        cpy.push(this.options.setArrayFromData(data.data))
+                        this.selectNodes = cpy;
+                    }
+                } else {
+                    //this.selectNodes.splice(index, 1);
+                    var index = this.findIndex(this.selectNodes, ele => { return ele.id == data.id });
+                    if (index >= 0) {//避免删除错误
+                        this.selectNodes.splice(index, 1);
+                    }
+                }
+            } else {
+                if (node.checked) {
+                    if (this.selectNodes != "") {
+                        this.fuckFlag = false;
+                    }
+                    this.$refs.tree.setCheckedNodes([data.data]);
+                    this.selectNodes = this.options.setArrayFromData(data.data);
+                }
+                else {
+                    if (this.fuckFlag) {
+                        this.selectNodes = "";
+                    } else {
+                        this.fuckFlag = true;
+                    }
+                }
+            }
+        },
         onload(node, resolve) {
             //if (node.level > 1) {
             //    return resolve([]);
             //}
-            // var a,b;n            // b = b.filter(function(e){return a.indexOf(e)>0;});
             var url = this.options.loadUrl;
             var para = this.options.loadDefaultPara;
 
@@ -169,11 +232,22 @@ Vue.component('zsfund-origination-tree', {
                 }
                 resolve(arr);
                 this.appendToOptions(data);
+
+
+                var nodes = this.selectNodes.slice ? this.selectNodes.slice(0) : new Array(this.selectNodes);
+                for (var i in nodes) {
+                    //console.log(this.findIndex(data, function (e) { e.id == nodes[i].id }));
+                    if (this.findIndex(data, function (e) { return e.id==nodes[i].id}) >= 0) {
+                        //默认未加载的节点不会被选中
+                        //所以认为nodes[i]未被选中
+                        this.$refs.tree.setChecked(nodes[i],true);
+                    }
+                }
             })
         },
         findIndex(array, callback) {
             if (!Array.isArray(array)) {
-                return -1;
+                return -2;
             }
             for (var i in array) {
                 if (callback(array[i])) {
@@ -185,27 +259,10 @@ Vue.component('zsfund-origination-tree', {
         onclick(node, data, f) {
             if (node.leaf == false) {
             //if (data.isLeaf == false) { // data.isLeaf根据树节点的resolve进行自动更新
-                                        // data.isLeafByUser与node.leaf绑定
+                                        // data.isLeafByUser与node.leaf绑定 
                 return;
             }
-            if (this.options.multiple) {
-
-                var index = this.findIndex(this.selectNodes,ele => { return ele.id == node.id });
-                //var index = this.selectNodes.findIndex(ele => { return ele.id == node.id });
-                //IE 不支持find和findIndex,使用自定义的简易findIndex
-                if (index == -1) {
-                    //深拷贝 用作watch
-                    var cpy = this.selectNodes.slice(0);
-                    cpy.push(this.options.setArrayFromData(node.data))
-                    this.selectNodes = cpy;
-                } else {
-                    this.selectNodes.splice(index, 1);
-                }
-            } else {
-                if (this.selectNodes=="" || this.selectNodes.id != node.id) {
-                    this.selectNodes = this.options.setArrayFromData(node.data);
-                }
-            }
+            this.$refs.tree.setChecked(node.id, !data.checked);
         },
         appendToOptions(data) {
             this.search = [];
@@ -229,7 +286,7 @@ Vue.component('zsfund-origination-tree', {
             })
         },
         loadLastNodes() {
-            if (!this.prevnodes) {
+            if (!(this.prevnodes&&this.prevnodes.length)) {
                 return;
             }
             var data = this.prevnodes;
@@ -246,6 +303,7 @@ Vue.component('zsfund-origination-tree', {
                     this.selectNodes = cpy;
                 }
             } else {
+                //this.$refs.tree.setChecked(data[0], true);
                 if (this.selectNodes == "" || this.selectNodes.id != data[0].id) {
                     this.selectNodes = this.options.setArrayFromData(data[0]);
                 }
@@ -270,7 +328,7 @@ Vue.component('zsfund-origination-tree', {
             (node) => {
                 var para = "id=" + node.data.id;
                 if (this.options.type)
-                    return para + "&type=" + this.options.type;
+                    return para + "&type=0";//" + this.options.type;
                 return para;
             };
         this.options.setArrayFromData = this.options.setArrayFromData ? this.options.setArrayFromData :
@@ -283,6 +341,7 @@ Vue.component('zsfund-origination-tree', {
                     id: data.id,
                     parentId: data.parentId,
                     type: (data.unitType == 1) ? "employee" : "department",
+                    disabled: this.options.type==1?data.unitType!=1:false,
                     //appendWhileSearch: (data.unitType == 1),
                     data: data
                 }
@@ -341,9 +400,9 @@ Vue.component("zsfund-origination-input-select", {
                     <el-input v-show="tags.length!=0"></el-input>
                     <el-input v-show="tags.length==0" placeholder="请输入内容"></el-input>
                 </div>
-                <el-dialog :visible.sync="dialogVisible" :width="300" custom-class="componydialog" 
+                <el-dialog :visible.sync="dialogVisible" :width="300" custom-class="componydialog"
                         :modal-append-to-body="false" append-to-body :close-on-click-modal="false">
-                    <zsfund-origination-tree :prevnodes="prevNodes" :options="option" 
+                    <zsfund-origination-tree :prevnodes="prevNodes" :options="option" ref="orgTree"
                         v-on:getvalue="setValue" v-on:cancelbutton="dialogVisible=false;"
                         v-on:confirmbutton="handleConfirm"></zsfund-origination-tree>
                 </el-dialog>
@@ -363,13 +422,19 @@ Vue.component("zsfund-origination-input-select", {
             //三者使用同一块内存？
             this.tags = this.selectData;
 
-            if (!this.options.multiple && this.prevNodes && this.firstload) {
+            if (this.prevNodes && this.prevNodes.length) {
+                if (!this.options.multiple && this.firstload) {
+                    this.firstload = false;
+                    return;
+                }
+            } else {
                 this.firstload = false;
-                return;
             }
+
             this.dialogVisible = false;
         },
         closeTag(tag) {
+            this.$refs.orgTree.removeTag(tag);
             if (this.options.multiple) {
                 this.tags.splice(this.tags.indexOf(tag), 1);
             } else {
@@ -391,7 +456,7 @@ Vue.component("zsfund-origination-input-select", {
         },
         loadLastNodes() {
             var idList = this.value;
-            if (idList == "") {
+            if (idList==""||!idList) {
                 return;
             }
 
@@ -410,9 +475,10 @@ Vue.component("zsfund-origination-input-select", {
     },
     watch: {
         tags(newVal, oldVal) {
-            if (!Array.isArray(newVal)) {
+            if (newVal === "") {
+                this.tags = [];
+            } else if (!Array.isArray(newVal)) {
                 this.tags = new Array(newVal);
-
             } else {
                 var res = newVal;
                 //此处对prevNodes进行更新是为了
