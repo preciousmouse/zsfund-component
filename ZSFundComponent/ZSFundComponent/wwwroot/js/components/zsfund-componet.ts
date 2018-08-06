@@ -531,7 +531,7 @@ Vue.component("zsfund-origination-input-select", {
     },
     created: function () {
         this.option.collapseTags = this.options.collapseTags ? this.options.collapseTags : false;
-        this.option.multiple = this.options.multiple ? this.options.multiple : true;
+        this.option.multiple = this.options.multiple != undefined ? this.options.multiple : true;
         //this.option.type = this.options.type ? this.options.type : orgSelectType.all;
         this.option.displayType = this.options.displayType ? this.options.displayType : OrgBasePara.OrgSelectType.All;
         this.option.chosenType = this.options.chosenType ? this.options.chosenType : this.options.displayType;
