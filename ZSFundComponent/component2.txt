@@ -72,8 +72,15 @@ bugs：
 				可选择 人
 				初始化 某个部门
 
+	搜索问题
+		1、	通过搜索可能选取到不可选择的值		--solve
+			参考情况见选中值初始化2
+
 	setArrayFromData问题
-		1、	leaf、depth、type、disabled等属性的现有逻辑只适用于仅有department和employee的情况，扩展类型时需要重新改动
+		1、	leaf、depth、type、disabled等属性的现有逻辑
+			只适用于仅有department和employee的情况，
+			扩展类型时需要重新改动
+
 		2、	内外组件setArrayFromData同步问题
 
 	displayType问题

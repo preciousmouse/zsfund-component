@@ -154,7 +154,7 @@ Vue.component('zsfund-origination-tree', {
                     <el-option v-for="item in selectNodes" :label="item.label" :key="item.id" :value="item"></el-option>
                 </el-option-group>
                 <el-option-group  label="搜索结果">
-                    <el-option v-for="item in search" :label="item.label" :key="item.id" :value="item"></el-option>
+                    <el-option v-for="item in search" :label="item.label" :key="item.id" :value="item" :disabled="item.disabled"></el-option>
                 </el-option-group>
             </el-select>
             <el-tree :props="props" lazy :load="onload" node-key="id"  @node-click="onclick" 
