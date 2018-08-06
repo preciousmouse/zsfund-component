@@ -66,9 +66,28 @@ var AjaxHelper = /** @class */ (function () {
     };
     return AjaxHelper;
 }());
-var baseUrl = 'http://component/';
-//var baseUrl = '';
+var orgBasePara = /** @class */ (function () {
+    function orgBasePara() {
+        var orgSelectType;
+        (function (orgSelectType) {
+            orgSelectType[orgSelectType["Employee"] = 1] = "Employee";
+            orgSelectType[orgSelectType["Department"] = 8] = "Department";
+            orgSelectType[orgSelectType["all"] = 255] = "all";
+        })(orgSelectType || (orgSelectType = {}));
+        orgBasePara.orgSelectType = orgSelectType;
+    }
+    orgBasePara.getLastBit = function (type) {
+        var count = 0;
+        while ((type & 1) == 0 && type != 0) {
+            type >>= 1;
+            count++;
+        }
+        return 1 << count;
+    };
+    return orgBasePara;
+}());
 var ajaxHelper = new AjaxHelper();
+var orgbasepara = new orgBasePara();
 Vue.component('zsfund-stock-select', {
     data: function () {
         return {
@@ -82,6 +101,7 @@ Vue.component('zsfund-stock-select', {
     methods: {
         findSecInSelect: function (query) {
             var _this = this;
+            var baseUrl = "http://component";
             if (query !== '') {
                 ajaxHelper.RequestData(baseUrl + "api/StockInfo/GetStockInfo", "queryStr=" + query, function (data) {
                     _this.stocks = data;
@@ -109,14 +129,14 @@ Vue.component('zsfund-origination-tree', {
             props: {
                 label: 'label',
                 children: 'nodes',
-                depth: 'depth',
+                //depth: 'depth',
                 isLeaf: 'leaf',
                 type: 'type',
                 disabled: 'disabled'
             },
         };
     },
-    props: ['options', 'prevnodes'],
+    props: ['options', 'prevnodes', 'baseurl'],
     template: "\n        <div id=\"orgTreeSelect\">\n            <el-select v-model=\"selectNodes\" :multiple=\"options.multiple\" filterable remote placeholder=\"\u8F93\u5165\u5173\u952E\u5B57\"\n                    :collapse-tags=\"options.collapseTags\" value-key=\"id\" :remote-method=\"getSearchResult\" \n                    :loading=\"loading\" @remove-tag=\"removeTag\" @change=\"selectChosen\">\n                <el-option-group v-if=\"selectNodes!=undefined && selectNodes.length>0\" label=\"\u5DF2\u9009\u4E2D\">\n                    <el-option v-for=\"item in selectNodes\" :label=\"item.label\" :key=\"item.id\" :value=\"item\"></el-option>\n                </el-option-group>\n                <el-option-group  label=\"\u641C\u7D22\u7ED3\u679C\">\n                    <el-option v-for=\"item in search\" :label=\"item.label\" :key=\"item.id\" :value=\"item\"></el-option>\n                </el-option-group>\n            </el-select>\n            <el-tree :props=\"props\" lazy :load=\"onload\" node-key=\"id\"  @node-click=\"onclick\" \n                     ref=\"tree\" show-checkbox check-strictly @check-change=\"checkChange\">\n                <span class=\"custom-tree-node\" slot-scope=\"ele\">\n                    <i v-if=\"ele.data.type=='department'\" class=\"fa fa-university\"></i>\n                    <i v-else-if=\"ele.data.type=='group'\" class=\"fa fa-users\"></i>\n                    <i v-else-if=\"ele.data.type=='manager'\" class=\"fa fa-user-secret\"></i>\n                    <i v-else=\"ele.data.type=='employee'\" class=\"fa fa-user\"></i>\n                    <span>{{ ele.node.label }}</span>\n                </span>\n            </el-tree>\n            <div class=\"footer\" style=\"\"><span class=\"buttons\">\n                <el-button @click=\"cancelbtn\">\u53D6 \u6D88</el-button>\n                <el-button type=\"primary\" @click=\"confirmbtn\">\u786E \u5B9A</el-button>\n            </span></div>\n        </div>\n    ",
     methods: {
         selectChosen: function (data) {
@@ -226,7 +246,7 @@ Vue.component('zsfund-origination-tree', {
             return -1;
         },
         onclick: function (node, data, f) {
-            if (node.leaf == false) {
+            if (node.disabled || !node.leaf) {
                 //if (data.isLeaf == false) { // data.isLeaf根据树节点的resolve进行自动更新
                 // data.isLeafByUser与node.leaf绑定 
                 return;
@@ -293,31 +313,30 @@ Vue.component('zsfund-origination-tree', {
     },
     created: function () {
         var _this = this;
-        this.options.loadUrl = this.options.loadUrl ? this.options.loadUrl : "http://userservice/api/Org/Children";
+        this.options.loadUrl = this.options.loadUrl ? this.options.loadUrl : this.baseurl + "/api/Org/Children"; //"http://userservice/api/Org/Children";
         this.options.loadDefaultPara = this.options.loadDefaultPara ? this.options.loadDefaultPara : "";
         this.options.loadPara = this.options.loadPara ? this.options.loadPara :
             function (node) {
                 var para = "id=" + node.data.id;
-                if (_this.options.type)
-                    return para + "&type=0"; //" + this.options.type;
-                return para;
+                return para + "&type=" + _this.options.displayType;
             };
         this.options.setArrayFromData = this.options.setArrayFromData ? this.options.setArrayFromData :
             function (data) {
                 return {
                     label: data.displayName,
-                    leaf: data.unitType == (_this.options.type == 0 ? 1 : _this.options.type),
+                    leaf: (data.unitType & orgBasePara.getLastBit(_this.options.displayType)) == 1,
+                    //leaf: data.unitType == (this.options.type == orgSelectType.all ? orgSelectType.Employee : this.options.type),//根据type选项设置leaf属性
                     //混合选择模式下，在onload方法里也会对部门叶节点进行leaf属性的更新
-                    depth: (data.unitType == 1) ? 1 : 0,
+                    //depth: (data.unitType == 1) ? 1 : 0,
                     id: data.id,
                     parentId: data.parentId,
-                    type: (data.unitType == 1) ? "employee" : "department",
-                    disabled: _this.options.type == 1 ? data.unitType != 1 : false,
+                    type: (data.unitType == orgBasePara.orgSelectType.Employee) ? "employee" : "department",
+                    disabled: (data.unitType & _this.options.chosenType) == 0,
                     //appendWhileSearch: (data.unitType == 1),
                     data: data
                 };
             };
-        this.options.searchUrl = this.options.searchUrl ? this.options.searchUrl : "http://userservice/api/Org/Search";
+        this.options.searchUrl = this.options.searchUrl ? this.options.searchUrl : this.baseurl + "/api/Org/Search"; //"http://userservice/api/Org/Search";
         this.options.searchPara = this.options.searchPara ? this.options.searchPara :
             function (query) {
                 return "keyword=" + query;
@@ -338,17 +357,18 @@ Vue.component("zsfund-origination-input-select", {
             selectData: [],
             prevNodes: null,
             firstload: true,
+            baseUrl: "",
             option: {
                 collapseTags: false,
                 multiple: false,
-                type: 0,
+                //type: 0,
                 width: "",
                 height: "",
             },
         };
     },
-    props: ['options', 'value'],
-    template: "\n        <div>\n            <div v-if=\"options.disabled\">\n                <el-input :disabled=\"true\" placeholder=\"\u8BF7\u8F93\u5165\u5185\u5BB9\"></el-input></div>\n            <div v-else>\n                <div class=\"select\" @click=\"dialogVisible = true\" style=\"position:relative;\">\n                    <span class=\"tags\" style=\"position:absolute;top: 20%;\">\n                        <el-tag v-for=\"tag in tags\" :key=\"tag\" size=\"small\" style=\"margin-left: 6px;\"\n                                closable @close=\"closeTag(tag)\" :disable-transitions=\"true\">\n                            <i v-if=\"tag.type=='department'\" class=\"fa fa-university\"></i>\n                            <i v-else-if=\"tag.type=='group'\" class=\"fa fa-users\"></i>\n                            <i v-else-if=\"tag.type=='manager'\" class=\"fa fa-user-secret\"></i>\n                            <i v-else=\"tag.type=='employee'\" class=\"fa fa-user\"></i>\n                            {{tag.label}}\n                        </el-tag>\n                    </span>\n                    <el-input v-show=\"tags.length!=0\"></el-input>\n                    <el-input v-show=\"tags.length==0\" placeholder=\"\u8BF7\u8F93\u5165\u5185\u5BB9\"></el-input>\n                </div>\n                <el-dialog :visible.sync=\"dialogVisible\" :width=\"300\" custom-class=\"componydialog\"\n                        :modal-append-to-body=\"false\" append-to-body :close-on-click-modal=\"false\">\n                    <zsfund-origination-tree :prevnodes=\"prevNodes\" :options=\"option\" ref=\"orgTree\"\n                        v-on:getvalue=\"setValue\" v-on:cancelbutton=\"dialogVisible=false;\"\n                        v-on:confirmbutton=\"handleConfirm\"></zsfund-origination-tree>\n                </el-dialog>\n            </div>\n        </div>\n    ",
+    props: ['options', 'value', 'baseurl'],
+    template: "\n        <div>\n            <div v-if=\"options.disabled\">\n                <el-input :disabled=\"true\" placeholder=\"\u8BF7\u8F93\u5165\u5185\u5BB9\"></el-input></div>\n            <div v-else>\n                <div class=\"select\" @click=\"dialogVisible = true\" style=\"position:relative;\">\n                    <span class=\"tags\" style=\"position:absolute;top: 20%;\">\n                        <el-tag v-for=\"tag in tags\" :key=\"tag\" size=\"small\" style=\"margin-left: 6px;\"\n                                closable @close=\"closeTag(tag)\" :disable-transitions=\"true\">\n                            <i v-if=\"tag.type=='department'\" class=\"fa fa-university\"></i>\n                            <i v-else-if=\"tag.type=='group'\" class=\"fa fa-users\"></i>\n                            <i v-else-if=\"tag.type=='manager'\" class=\"fa fa-user-secret\"></i>\n                            <i v-else=\"tag.type=='employee'\" class=\"fa fa-user\"></i>\n                            {{tag.label}}\n                        </el-tag>\n                    </span>\n                    <el-input v-show=\"tags.length!=0\"></el-input>\n                    <el-input v-show=\"tags.length==0\" placeholder=\"\u8BF7\u8F93\u5165\u5185\u5BB9\"></el-input>\n                </div>\n                <el-dialog :visible.sync=\"dialogVisible\" :width=\"300\" custom-class=\"componydialog\"\n                        :modal-append-to-body=\"false\" append-to-body :close-on-click-modal=\"false\">\n                    <zsfund-origination-tree :prevnodes=\"prevNodes\" :options=\"option\" ref=\"orgTree\" :baseurl=\"baseUrl\"\n                        v-on:getvalue=\"setValue\" v-on:cancelbutton=\"dialogVisible=false;\"\n                        v-on:confirmbutton=\"handleConfirm\"></zsfund-origination-tree>\n                </el-dialog>\n            </div>\n        </div>\n    ",
     methods: {
         setValue: function (data) {
             this.selectData = data;
@@ -386,13 +406,11 @@ Vue.component("zsfund-origination-input-select", {
         setArrayFromData: function (data) {
             return {
                 label: data.displayName,
-                leaf: data.unitType == (this.options.type == 0 ? 1 : this.option.type),
-                //混合选择模式下，在onload方法里也会对部门叶节点进行leaf属性的更新
-                depth: (data.unitType == 1) ? 1 : 0,
+                leaf: (data.unitType & orgBasePara.getLastBit(this.options.displayType)) == 1,
                 id: data.id,
                 parentId: data.parentId,
-                type: (data.unitType == 1) ? "employee" : "department",
-                //appendWhileSearch: (data.unitType == 1),
+                type: (data.unitType == orgBasePara.orgSelectType.Employee) ? "employee" : "department",
+                disabled: (data.unitType & this.options.chosenType) == 0,
                 data: data
             };
         },
@@ -439,13 +457,18 @@ Vue.component("zsfund-origination-input-select", {
             }
         },
     },
-    mounted: function () {
-        this.option.collapseTags = this.options.collapseTags;
-        this.option.multiple = this.options.multiple;
-        this.option.type = this.options.type ? this.options.type : 0;
+    created: function () {
+        this.option.collapseTags = this.options.collapseTags ? this.options.collapseTags : false;
+        this.option.multiple = this.options.multiple ? this.options.multiple : true;
+        //this.option.type = this.options.type ? this.options.type : orgSelectType.all;
+        this.option.displayType = this.options.displayType ? this.options.displayType : orgBasePara.orgSelectType.all;
+        this.option.chosenType = this.options.chosenType ? this.options.chosenType : this.options.displayType;
+        this.baseUrl = this.baseurl ? this.baseurl : "http://userservice";
         this.option.width = "260";
         this.option.height = "300";
         this.prevNodes = this.value ? this.value : null;
+    },
+    mounted: function () {
         this.loadLastNodes();
     }
 });

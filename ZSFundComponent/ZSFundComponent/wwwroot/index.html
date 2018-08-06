@@ -40,11 +40,22 @@
             //即使在单选模式下，返回值也是一个长度为0或1的数组
             secCode: null,
             OrgOptions: {//zsfund-origination-input-select配置参数，说明如下：
-                collapseTags: false,//[option,默认为false]element-ui  el-select组件自带的属性,选中多组数据时，若该值为true，则只会显示第一条tag，多余的以“+1”形式表示
+                collapseTags: false,//[option,默认为false]element-ui el-select组件自带的属性,选中多组数据时，若该值为true，则只会显示第一条tag，多余的以“+1”形式表示
                 disabled: false,//[option,默认为false],用于控制zsfund-origination-input-select组件是否可用
                 multiple: true,//[option,默认为true]用于控制zsfund-origination-input-select组件是否可多选
-                type: 0// [option,默认为0,其他参数为1（表示个人）8（表示部门）0（表示所有）]type=1：目录树中除了第一级节点之外，只显示员工节点,tpye=8：目录树中除了第一级节点之外，只显示部门节点,type=0：目录树节点全部显示
-            }
+                //type: 0,// [option,默认为0,其他参数为1（表示个人）8（表示部门）0（表示所有）]type=1：目录树中除了第一级节点之外，只显示员工节点,tpye=8：目录树中除了第一级节点之外，只显示部门节点,type=0：目录树节点全部显示
+                displayType: orgBasePara.orgSelectType.Employee | orgBasePara.orgSelectType.Department,
+                                //[option,默认为orgBasePara.orgSelectType.all,支持多个参数的位或运算结果,例如9(表示个人+部门)]
+                                /*
+                                    orgBasePara.orgSelectType = enum{
+                                        Employee = 1,
+                                        Department = 8,
+                                        all = 255
+                                    }
+                                 */
+                chosenType: orgBasePara.orgSelectType.Department,//[option,默认为displayType的值,用法与其相同]
+            },
+            baseUrl: "http://hahaha"
         },
         methods: {
             change: function (value) {
@@ -53,9 +64,7 @@
             showCode: function () {
                 console.log(this.secCode);
             },
-            changeOrg: function (val) { 
-                this.nodes = val;
-            },
+
             showNodes: function () {
                 console.log(this.str);
             }

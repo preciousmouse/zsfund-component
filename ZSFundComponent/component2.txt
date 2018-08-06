@@ -46,11 +46,15 @@
 			则checkbox进行更新
 
 	12、request
-		1、最外层使用v-model绑定值				
+		1、 最外层使用v-model绑定值				
 			入口参数和出口参数都设置为字符串
 				idList，分号分隔
-		2、员工选择模式下						--solve
+		2、 员工选择模式下						--solve
 			显示部门节点，但是不可选择
+
+		3、 使用typescript对type值进行枚举		--solve
+
+		4、 可显示和可选择逻辑分离				--solve
 
 
 
@@ -60,9 +64,22 @@ bugs：
 			此时再打开内部dialog时，内外数据不同步
 		2、	单选模式下，最外部删除tags后内部select内容不会同步消失
 			此时内部checkbox已取消选择，然而直接点确定可以进行选择操作
-	选中值初始化问题
-		1、 	上一次选中节点加载时，树节点的checkbox不同步
 
+	选中值初始化问题
+		1、	上一次选中节点加载时，树节点的checkbox不同步
+		2、	初始化值可能为当前模式下不可选中的值，例如以下情况
+				可显示 人+部门
+				可选择 人
+				初始化 某个部门
+
+	setArrayFromData问题
+		1、	leaf、depth、type、disabled等属性的现有逻辑只适用于仅有department和employee的情况，扩展类型时需要重新改动
+		2、	内外组件setArrayFromData同步问题
+
+	displayType问题
+		1、	值为单个选项(0x1、0x1000)时逻辑正常
+			值为多个选项时逻辑趋向于type无效导致获取所有type情况，无法根据值进行准确筛选
+				可通过调整api、或手动筛选或手动迭代get数据
 
 
 小组件内外值绑定问题
