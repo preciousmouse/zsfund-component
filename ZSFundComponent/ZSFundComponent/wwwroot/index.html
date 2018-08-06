@@ -21,7 +21,7 @@
     <div id="components-demo">
         <zsfund-stock-select v-model="secCode" @change="change" size="mini"></zsfund-stock-select>
         <input type="button" v-on:click="showCode" value="show secCode" />
-        <zsfund-origination-input-select :options="OrgOptions" :value="str" @change="changeOrg"></zsfund-origination-input-select>
+        <zsfund-origination-input-select :options="OrgOptions" v-model="str"></zsfund-origination-input-select>
         <el-button @click="showNodes">console log: nodes</el-button>
     </div>
 </body>
@@ -57,9 +57,7 @@
                 this.nodes = val;
             },
             showNodes: function () {
-                console.log(this.nodes);
-                //this.str = "8d4f0e19-8355-43c6-b49d-20c7c44774c3";
-                //console.log(this.nodes);
+                console.log(this.str);
             }
         }
     });

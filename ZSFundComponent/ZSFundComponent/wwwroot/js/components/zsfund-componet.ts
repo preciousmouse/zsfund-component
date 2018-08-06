@@ -170,7 +170,7 @@ Vue.component('zsfund-origination-tree', {
                     this.$refs.tree.setChecked(addNodes[i], true);
                 }
             } else {
-                console.log("wtf");
+                console.log("assert");
             }
         },
         removeTag(data) {
@@ -434,7 +434,9 @@ Vue.component("zsfund-origination-input-select", {
             this.dialogVisible = false;
         },
         closeTag(tag) {
-            this.$refs.orgTree.removeTag(tag);
+            if (this.$refs.orgTree) {
+                this.$refs.orgTree.removeTag(tag);
+            }
             if (this.options.multiple) {
                 this.tags.splice(this.tags.indexOf(tag), 1);
             } else {
@@ -485,17 +487,20 @@ Vue.component("zsfund-origination-input-select", {
                 //若在加载内部组件zsfund-origination-tree前就对最外层tags进行close操作的话
                 //内部组件得到的prevNodes可以得到更新后的数据
                 this.prevNodes = [];
+                var idList = [];
                 for (var i in res) {
                     this.prevNodes.push(res[i].data);
+                    idList.push(res[i].id);
                 }
 
                 this.$emit('change', res);
+                this.$emit('input', idList);
             }
         },
-        value(newVal, oldVal) {
-            this.prevNodes = newVal ? newVal : null;
-            this.loadLastNodes();
-        }
+        //value(newVal, oldVal) {
+        //    this.prevNodes = newVal ? newVal : null;
+        //    this.loadLastNodes();
+        //}
     },
     mounted: function(){
         this.option.collapseTags= this.options.collapseTags;
