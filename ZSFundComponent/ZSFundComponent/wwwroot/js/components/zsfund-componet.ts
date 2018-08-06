@@ -66,15 +66,15 @@ class AjaxHelper {
     }
 }
 
-class orgBasePara {
-    static orgSelectType: any;
+class OrgBasePara {
+    static OrgSelectType: any;
     constructor() {
-        enum orgSelectType {
+        enum OrgSelectType {
             Employee = 1,
             Department = 8,
-            all = 255
+            All = 255
         }
-        orgBasePara.orgSelectType = orgSelectType;
+        OrgBasePara.OrgSelectType = OrgSelectType;
     }
 
     static getLastBit(type) {
@@ -88,7 +88,7 @@ class orgBasePara {
 }
 
 var ajaxHelper = new AjaxHelper();
-var orgbasepara = new orgBasePara();
+var orgBasePara = new OrgBasePara();
 Vue.component('zsfund-stock-select', {
     data: () => {
         return {
@@ -354,13 +354,13 @@ Vue.component('zsfund-origination-tree', {
             (data) => {
                 return {
                     label: data.displayName,
-                    leaf: (data.unitType & orgBasePara.getLastBit(this.options.displayType)) == 1,
+                    leaf: (data.unitType & OrgBasePara.getLastBit(this.options.displayType)) !=0,
                     //leaf: data.unitType == (this.options.type == orgSelectType.all ? orgSelectType.Employee : this.options.type),//根据type选项设置leaf属性
                                                                                             //混合选择模式下，在onload方法里也会对部门叶节点进行leaf属性的更新
                     //depth: (data.unitType == 1) ? 1 : 0,
                     id: data.id,
                     parentId: data.parentId,
-                    type: (data.unitType == orgBasePara.orgSelectType.Employee) ? "employee" : "department",
+                    type: (data.unitType == OrgBasePara.OrgSelectType.Employee) ? "employee" : "department",
                     disabled: (data.unitType&this.options.chosenType)==0,//this.options.type==orgSelectType.Employee?data.unitType!=orgSelectType.Employee:false,
                     //appendWhileSearch: (data.unitType == 1),
                     data: data
@@ -467,10 +467,10 @@ Vue.component("zsfund-origination-input-select", {
         setArrayFromData: function (data){
             return {
                 label: data.displayName,
-                leaf: (data.unitType & orgBasePara.getLastBit(this.options.displayType)) == 1,
+                leaf: (data.unitType & OrgBasePara.getLastBit(this.options.displayType)) == 1,
                 id: data.id,
                 parentId: data.parentId,
-                type: (data.unitType == orgBasePara.orgSelectType.Employee) ? "employee" : "department",
+                type: (data.unitType == OrgBasePara.OrgSelectType.Employee) ? "employee" : "department",
                 disabled: (data.unitType & this.options.chosenType) == 0,
                 data: data
             }
@@ -512,8 +512,8 @@ Vue.component("zsfund-origination-input-select", {
                     idList.push(res[i].id);
                 }
 
-                this.$emit('change', res);
-                this.$emit('input', idList);
+                //this.$emit('change', res);
+                this.$emit('input', idList.join(";"));
             }
         },
         //value(newVal, oldVal) {
@@ -525,8 +525,10 @@ Vue.component("zsfund-origination-input-select", {
         this.option.collapseTags = this.options.collapseTags ? this.options.collapseTags : false;
         this.option.multiple = this.options.multiple ? this.options.multiple : true;
         //this.option.type = this.options.type ? this.options.type : orgSelectType.all;
-        this.option.displayType = this.options.displayType ? this.options.displayType : orgBasePara.orgSelectType.all;
+        this.option.displayType = this.options.displayType ? this.options.displayType : OrgBasePara.OrgSelectType.All;
         this.option.chosenType = this.options.chosenType ? this.options.chosenType : this.options.displayType;
+        //setArrayFromData内外同步
+        //this.option.setArrayFromData = this.options.setArrayFromData;
 
         this.baseUrl = this.baseurl ? this.baseurl : "http://userservice";
 
