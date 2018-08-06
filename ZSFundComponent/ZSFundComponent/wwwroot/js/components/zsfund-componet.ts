@@ -144,7 +144,7 @@ Vue.component('zsfund-origination-tree', {
 
         }
     },
-    props: ['options', 'prevnodes', 'baseurl'],
+    props: ['options', 'prevnodes', 'baseurl','dialog'],
     template: `
         <div id="orgTreeSelect">
             <el-select v-model="selectNodes" :multiple="options.multiple" filterable remote placeholder="输入关键字"
@@ -320,6 +320,7 @@ Vue.component('zsfund-origination-tree', {
                     var cpy = [];
                     for(var i in data){
                         cpy.push(this.options.setArrayFromData(data[i]))
+                        this.$refs.tree.setChecked(data[i].id,true)
                     }
                     this.selectNodes = cpy;
                 }
@@ -340,6 +341,12 @@ Vue.component('zsfund-origination-tree', {
     watch: {
         selectNodes(newVal, oldVal) {
             this.$emit('getvalue', newVal);
+        },
+        dialog(newVal, oldVal) {
+            if (newVal == false) {
+                return;
+            }
+            this.loadLastNodes();
         }
     },
     created: function () {
@@ -423,7 +430,8 @@ Vue.component("zsfund-origination-input-select", {
                 </div>
                 <el-dialog :visible.sync="dialogVisible" :width="300" custom-class="componydialog"
                         :modal-append-to-body="false" append-to-body :close-on-click-modal="false">
-                    <zsfund-origination-tree :prevnodes="prevNodes" :options="option" ref="orgTree" :baseurl="baseUrl"
+                    <zsfund-origination-tree :prevnodes="prevNodes" :options="option" 
+                        ref="orgTree" :baseurl="baseUrl" :dialog="dialogVisible"
                         v-on:getvalue="setValue" v-on:cancelbutton="dialogVisible=false;"
                         v-on:confirmbutton="handleConfirm"></zsfund-origination-tree>
                 </el-dialog>
